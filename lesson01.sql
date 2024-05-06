@@ -173,9 +173,12 @@ select last_name, first_name from employees where last_name like 'B%';
 -- limit
 -- 
 
-select product_name, unit_price 
-from products 
-where discontinued != 1 
+select 
+	product_name, unit_price 
+from 
+	products 
+where 
+	discontinued != 1 
 order by 
 	unit_price desc
 limit 5; 
@@ -185,9 +188,12 @@ limit 5;
 --
 
 -- все записи где ship_region null
-select ship_city, ship_region, ship_country 
-from orders 
-where ship_region is null;
+select 
+	ship_city, ship_region, ship_country 
+from 
+	orders 
+where 
+	ship_region is null;
 
 -- все записи где ship_region не null
 select 
@@ -240,7 +246,7 @@ group by
 having
 	sum(unit_price * units_in_stock) > 5000
 order by
-	sum(unit_price * units_in_stock) desc
+	sum(unit_price * units_in_stock) desc;
 
 --
 -- union, intersect, except
@@ -254,7 +260,7 @@ from
 union select 
 	country
 from
-	employees
+	employees;
 
 	
 select 
@@ -264,7 +270,7 @@ from
 intersect select
 	country
 from
-	suppliers
+	suppliers;
 
 -- пояснение к тому как работает except и except all
 -- set A = (10 11 12 10 10)
@@ -280,7 +286,7 @@ from
 except select
 	country
 from 
-	suppliers
+	suppliers;
 
 
 --
@@ -320,7 +326,7 @@ select
 from 
 	employees
 where
-	region is null
+	region is null;
 
 -- Подсчитать кол-во заказчиков регион которых известен
 select
@@ -338,7 +344,7 @@ from
 group by
 	country
 order by
-	count(*) desc
+	count(*) desc;
 
 -- Подсчитать суммарный вес заказов (в которых известен регион) по странам, затем отфильтровать по суммарному весу 
 -- (вывести только те записи где суммарный вес больше 2750) и отсортировать по убыванию суммарного веса.
