@@ -120,3 +120,50 @@ join
     customers on customers.customer_id = orders.customer_id
 where
     orders.ship_country = 'USA';
+
+
+--
+-- left/right join
+--
+
+
+-- если каждому ключу есть соответсвие, то left/right join 
+-- идентичен inner join
+
+select 
+    company_name,
+    product_name
+from
+    suppliers
+left join -- в этом запросе left join идентичен inner join 
+    products on products.supplier_id = suppliers.supplier_id;
+
+
+-- найдем компании у которых нет заказов
+select
+    company_name,
+    order_id
+from
+    customers
+left join
+    orders on orders.customer_id = customers.customer_id
+where
+    order_id is null;
+
+
+-- есть ли работники которые не обрабатывают заказы?
+select
+    employees.first_name,
+    employees.last_name,
+    orders.employee_id
+from 
+    employees
+left join
+    orders on orders.employee_id = employees.employee_id
+where
+    orders.employee_id is null;
+
+
+-- full join - это объединение left и right join
+-- cross join - каждая строка первой таблицы объединяется
+-- с каждой строкой второй таблицы, для cross join не нужен on
