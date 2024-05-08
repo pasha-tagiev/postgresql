@@ -6,7 +6,7 @@
 -- self join
 
 --
--- inner join
+-- [inner] join 
 --
 
 select
@@ -62,4 +62,61 @@ group by
 having
     sum(products.unit_price * products.units_in_stock) > 5000
 order by
-    sum(products.unit_price * products.units_in_stock) desc
+    sum(products.unit_price * products.units_in_stock) desc;
+
+
+select 
+    employees.employee_id,
+    employees.last_name,
+    employees.first_name,
+    orders.ship_name
+from
+    employees
+inner join
+    orders
+on
+    orders.employee_id = employees.employee_id
+order by
+    employees.employee_id;
+
+
+select 
+    orders.order_date,
+    products.product_name,
+    orders.ship_country,
+    products.unit_price,
+    order_details.quantity,
+    order_details.discount
+from
+    order_details
+inner join 
+    orders   on orders.order_id = order_details.order_id 
+inner join 
+    products on products.product_id = order_details.product_id; 
+
+
+select
+    customers.contact_name,
+    customers.company_name,
+    customers.phone,
+    employees.first_name,
+    employees.last_name,
+    employees.title,
+    orders.order_date,
+    products.product_name,
+    orders.ship_country,
+    products.unit_price,
+    order_details.quantity,
+    order_details.discount
+from
+    order_details
+join
+    orders on orders.order_id = order_details.order_id
+join
+    products on products.product_id = order_details.product_id
+join
+    employees on employees.employee_id = orders.employee_id
+join
+    customers on customers.customer_id = orders.customer_id
+where
+    orders.ship_country = 'USA';
