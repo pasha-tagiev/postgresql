@@ -315,3 +315,75 @@ having
     sum(products.unit_price * products.units_in_stock) > 10000
 order by
     total_price desc;
+
+
+--
+-- ДЗ
+--
+
+
+-- Найти заказчиков и обслуживающих их заказы сотрудников таких, что и заказчики 
+-- и сотрудники из города London, а доставка идёт компанией Speedy Express. 
+-- Вывести компанию заказчика и ФИО сотрудника.
+select 
+    customers.company_name,
+    employees.first_name || ' ' || employees.last_name as full_name
+from
+    orders
+join
+    customers using(customer_id)
+join
+    employees using(employee_id)
+join
+    shippers on shippers.shipper_id = orders.ship_via
+where
+    employees.city = 'London' and
+    customers.city = 'London' and
+    shippers.company_name = 'Speedy Express';
+
+
+-- Найти активные (см. поле discontinued) продукты из категории Beverages и Seafood, 
+-- которых в продаже менее 20 единиц. Вывести наименование продуктов, кол-во единиц в 
+-- продаже, имя контакта поставщика и его телефонный номер.
+select 
+    products.product_name,
+    products.units_in_stock,
+    suppliers.contact_name,
+    suppliers.phone
+from
+    products
+join
+    suppliers using(supplier_id)
+join
+    categories using(category_id)
+where
+    categories.category_name in ('Beverages', 'Seafood') and
+    products.discontinued = 0 and
+    products.units_in_stock < 20
+order by
+    products.units_in_stock;
+
+
+-- Найти заказчиков, не сделавших ни одного заказа. Вывести имя заказчика и order_id.
+select 
+    customers.contact_name,
+    orders.order_id
+from
+    customers
+left join
+    orders using(customer_id)
+where
+    orders.order_id is null;
+
+
+-- Переписать предыдущий запрос, использовав симметричный 
+-- вид джойна (подсказка: речь о LEFT и RIGHT).
+select 
+    customers.contact_name,
+    orders.order_id
+from
+    orders
+right join
+    customers using(customer_id)
+where
+    orders.order_id is null;
