@@ -167,3 +167,151 @@ where
 -- full join - это объединение left и right join
 -- cross join - каждая строка первой таблицы объединяется
 -- с каждой строкой второй таблицы, для cross join не нужен on
+
+
+--
+-- self join
+--
+
+
+-- примера для self join в базе данных northwind не нашлось,
+-- поэтому прежде чем использовать следующий пример нужно
+-- создать новую базу данных
+
+-- self join применяется когда существует иерархия в рамках одной таблицы
+
+create table employee (
+    employee_id int primary key,
+    first_name varchar(256) not null,
+    last_name varchar(256) not null,
+    manager_id int,
+    -- внешний ключ ссылается на первичный ключ этой же таблицы
+    foreign key (manager_id) references employee(employee_id)
+);
+
+insert into 
+    employee (employee_id, first_name, last_name, manager_id)
+values
+    (1, 'Windy', 'Hays', null),
+    (2, 'Ava', 'Christensen', 1),
+    (3, 'Hassan', 'Conner', 1),
+    (4, 'Anna', 'Reeves', 2),
+    (5, 'Sau', 'Norman', 2),
+    (6, 'Kelsie', 'Hays', 3),
+    (7, 'Tory', 'Goff', 3),
+    (8, 'Salley', 'Lester', 3);
+    
+-- пример self join
+-- выводим в первой колонке работников, во второй их менеджеров
+
+select 
+    e.first_name || ' ' || e.last_name as employee,
+    m.first_name || ' ' || m.last_name as manager
+from
+    employee e
+left join 
+    employee m 
+on 
+    m.employee_id = e.manager_id
+order by
+    manager;
+
+
+--
+-- using, natural join
+--
+
+-- using можно применить когда происходит join по столбцам с одинаковым именем
+
+
+select
+    customers.contact_name,
+    customers.company_name,
+    customers.phone,
+    employees.first_name,
+    employees.last_name,
+    employees.title,
+    orders.order_date,
+    products.product_name,
+    orders.ship_country,
+    products.unit_price,
+    order_details.quantity,
+    order_details.discount
+from
+    order_details
+join
+    orders using(order_id) -- вместо on orders.order_id = order_details.order_id
+join
+    products using(product_id)
+join
+    employees using(employee_id)
+join
+    customers using(customer_id)
+where
+    orders.ship_country = 'USA';
+
+
+-- natural join - join всех столбцов с одинаковым наименованием
+-- по умолчанию ведет себя как inner join
+-- общий вид: natural [ { left | right } [ outer ] | inner ] join
+select
+    orders.order_id,
+    orders.customer_id,
+    employees.first_name,
+    employees.last_name,
+    employees.title
+from
+    orders
+natural join
+    employees;
+
+
+--
+-- as (псевдонимы)
+--
+
+
+select 
+    count(*) as employees_count
+from
+    employees;
+
+
+select
+    count(distinct country) as country
+from
+    employees;
+
+
+select
+    categories.category_name, 
+    sum(products.units_in_stock) as units_in_stock
+from 
+    products
+join 
+    categories using(category_id)
+group by 
+    categories.category_name
+order by
+    categories.category_name desc
+limit 
+    5;
+
+
+select
+    categories.category_name as category,
+    sum(products.unit_price * products.units_in_stock) as total_price
+from
+    categories
+join
+    products using(category_id)
+where
+    products.discontinued != 1
+group by
+    category
+having
+    -- в where и having нельзя использовать псевдонимы,
+    -- т.к. они работают до вызова select
+    sum(products.unit_price * products.units_in_stock) > 10000
+order by
+    total_price desc;
